@@ -1,7 +1,6 @@
-const SHA256 = require('crypto-js/sha256');
+const SHA256 = require("crypto-js/sha256");
 const EC = require("elliptic").ec;
 const ec = new EC("secp256k1");
-const debug = require("debug")("meCoin:blockchain");
 
 class Transaction {
 	/**
@@ -22,7 +21,9 @@ class Transaction {
 	 * @returns {string}
 	 */
 	calculateHash() {
-		return SHA256(this.fromAddress + this.toAddress + this.amount + this.timestamp).toString();
+		return SHA256(
+			this.fromAddress + this.toAddress + this.amount + this.timestamp
+		).toString();
 	}
 
 	/**
@@ -89,7 +90,12 @@ class Block {
 	 * @returns {string}
 	 */
 	calculateHash() {
-		return SHA256(this.previousHash + this.timestamp + JSON.stringify(this.transactions) + this.nonce).toString();
+		return SHA256(
+			this.previousHash +
+				this.timestamp +
+				JSON.stringify(this.transactions) +
+				this.nonce
+		).toString();
 	}
 
 	/**
@@ -107,7 +113,7 @@ class Block {
 			this.hash = this.calculateHash();
 		}
 
-		debug(`Block mined: ${this.hash}`);
+		console.log(`Block mined: ${this.hash}`);
 	}
 
 	/**
@@ -130,16 +136,16 @@ class Block {
 class Blockchain {
 	constructor() {
 		this.chain = [this.createGenesisBlock()];
-		this.difficulty = 3;
+		this.difficulty = 2;
 		this.pendingTransactions = [];
-		this.miningReward = 10;
+		this.miningReward = 100;
 	}
 
 	/**
 	 * @returns {Block}
 	 */
 	createGenesisBlock() {
-		return new Block(Date.parse("2021-04-01"), [], "0");
+		return new Block(Date.parse("2017-01-01"), [], "0");
 	}
 
 	/**
@@ -167,14 +173,14 @@ class Blockchain {
 		);
 		this.pendingTransactions.push(rewardTx);
 
-		const block = new Block(
+		let block = new Block(
 			Date.now(),
 			this.pendingTransactions,
 			this.getLatestBlock().hash
 		);
 		block.mineBlock(this.difficulty);
 
-		debug("Block successfully mined!");
+		console.log("Block successfully mined!");
 		this.chain.push(block);
 
 		this.pendingTransactions = [];
@@ -201,13 +207,7 @@ class Blockchain {
 			throw new Error("Transaction amount should be higher than 0");
 		}
 
-		// Making sure that the amount sent is not greater than existing balance
-		if (this.getBalanceOfAddress(transaction.fromAddress) < transaction.amount) {
-			throw new Error("Not enough balance");
-		}
-
 		this.pendingTransactions.push(transaction);
-		debug("transaction added: %s", transaction);
 	}
 
 	/**
@@ -231,7 +231,6 @@ class Blockchain {
 			}
 		}
 
-		debug("getBalanceOfAdrees: %s", balance);
 		return balance;
 	}
 
@@ -253,7 +252,6 @@ class Blockchain {
 			}
 		}
 
-		debug("get transactions for wallet count: %s", txs.length);
 		return txs;
 	}
 
