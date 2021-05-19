@@ -130,16 +130,16 @@ class Block {
 class Blockchain {
 	constructor() {
 		this.chain = [this.createGenesisBlock()];
-		this.difficulty = 2;
+		this.difficulty = 3;
 		this.pendingTransactions = [];
-		this.miningReward = 100;
+		this.miningReward = 10;
 	}
 
 	/**
 	 * @returns {Block}
 	 */
 	createGenesisBlock() {
-		return new Block(Date.parse("2017-01-01"), [], "0");
+		return new Block(Date.parse("2021-04-01"), [], "0");
 	}
 
 	/**
@@ -202,10 +202,7 @@ class Blockchain {
 		}
 
 		// Making sure that the amount sent is not greater than existing balance
-		if (
-			this.getBalanceOfAddress(transaction.fromAddress) <
-			transaction.amount
-		) {
+		if (this.getBalanceOfAddress(transaction.fromAddress) < transaction.amount) {
 			throw new Error("Not enough balance");
 		}
 
